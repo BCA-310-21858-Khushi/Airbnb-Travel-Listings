@@ -1,0 +1,55 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="mt-4">
+  <h2 class="fw-bold mb-3">My Listings</h2>
+
+  <% if(listings.length === 0) { %>
+    <div class="alert alert-warning">
+      You have not created any listings yet.
+    </div>
+  <% } %>
+
+  <div class="row">
+    <% for(let listing of listings) { %>
+
+      <%
+        let listingImage = "";
+
+        if (listing.images && listing.images.length > 0) {
+          listingImage = listing.images[0].url;
+        } else if (listing.image && listing.image.url) {
+          listingImage = listing.image.url;
+        }
+      %>
+
+      <div class="col-md-4 mb-4">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+
+          <div class="card h-100 shadow-sm">
+            <img
+              src="<%= listingImage %>"
+              class="card-img-top"
+              alt="listing image"
+            >
+
+            <div class="card-body">
+              <h5><%= listing.title %></h5>
+
+              <p>
+                ₹ <%= listing.price.toLocaleString("en-IN") %>
+              </p>
+
+              <p>
+                <%= listing.location %>,
+                <%= listing.country %>
+              </p>
+            </div>
+
+          </div>
+
+        </a>
+      </div>
+
+    <% } %>
+  </div>
+</div>

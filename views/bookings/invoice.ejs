@@ -1,0 +1,103 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4 mb-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">Booking Invoice</h2>
+
+    <a
+  href="/bookings/<%= booking._id %>/invoice/download"
+  class="btn btn-dark"
+>
+  <i class="fa-solid fa-file-pdf"></i>
+  Download PDF
+</a>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+      <div class="text-center mb-4">
+        <h3 class="fw-bold text-danger">
+          <i class="fa-solid fa-compass"></i>
+          WanderLust
+        </h3>
+        <p class="text-muted mb-0">Booking Receipt / Invoice</p>
+      </div>
+
+      <hr>
+
+      <p><strong>Booking ID:</strong> <%= booking._id %></p>
+      <p><strong>Guest Name:</strong> <%= booking.user.username %></p>
+
+      <hr>
+
+      <h5 class="fw-bold mb-3">Property Details</h5>
+
+      <p><strong>Property:</strong> <%= booking.listing.title %></p>
+      <p>
+        <strong>Location:</strong>
+        <%= booking.listing.location %>, <%= booking.listing.country %>
+      </p>
+
+      <hr>
+
+      <h5 class="fw-bold mb-3">Booking Details</h5>
+
+      <p><strong>Check In:</strong> <%= booking.checkIn.toDateString() %></p>
+      <p><strong>Check Out:</strong> <%= booking.checkOut.toDateString() %></p>
+      <p><strong>Guests:</strong> <%= booking.guests %></p>
+
+      <hr>
+
+      <h5 class="fw-bold mb-3">Payment Details</h5>
+
+      <p>
+        <strong>Payment Method:</strong>
+        <%= booking.paymentMethod || "Cash on Arrival" %>
+      </p>
+
+      <p>
+        <strong>Payment Status:</strong>
+        <% if(booking.paymentStatus === "Paid") { %>
+          <span class="badge bg-success">Paid</span>
+        <% } else { %>
+          <span class="badge bg-warning text-dark">Pending</span>
+        <% } %>
+      </p>
+
+      <div class="border rounded-4 p-3 mt-3 bg-light">
+        <p class="mb-2">
+          <strong>Base Price:</strong>
+          ₹ <%= (booking.basePrice || (booking.totalPrice - (booking.gstAmount || 0))).toLocaleString("en-IN") %>
+        </p>
+
+        <p class="mb-2">
+          <strong>GST (18%):</strong>
+          ₹ <%= (booking.gstAmount || 0).toLocaleString("en-IN") %>
+        </p>
+
+        <hr>
+
+        <h4 class="fw-bold text-danger mb-0">
+          Total Amount:
+          ₹ <%= booking.totalPrice.toLocaleString("en-IN") %>
+        </h4>
+      </div>
+
+      <hr>
+
+      <p class="text-muted small mb-0">
+        This is a system-generated invoice for your WanderLust booking.
+      </p>
+
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <a href="/bookings/my-bookings" class="btn btn-outline-secondary">
+      Back to My Bookings
+    </a>
+  </div>
+
+</div>

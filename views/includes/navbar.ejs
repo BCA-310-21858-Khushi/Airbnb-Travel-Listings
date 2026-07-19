@@ -1,0 +1,145 @@
+<nav class="navbar navbar-expand-lg border-bottom shadow-sm sticky-top">
+  <div class="container-fluid px-4">
+
+    <a class="navbar-brand fw-bold text-danger" href="/listings">
+      <i class="fa-solid fa-compass"></i> WanderLust
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <ul class="navbar-nav me-auto align-items-lg-center gap-lg-1">
+
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/listings">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/listings">Listings</a>
+        </li>
+
+        <% if(currUser) { %>
+
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/bookings/my-bookings">
+              <i class="fa-solid fa-calendar-check"></i> Bookings
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/wishlist">
+              <i class="fa-solid fa-heart"></i> Wishlist
+            </a>
+          </li>
+
+          <% if(currUser.role === "host" || currUser.role === "admin") { %>
+
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/listings/new">
+                <i class="fa-solid fa-plus"></i> Add
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/my-listings">
+                <i class="fa-solid fa-house-user"></i> My Stays
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/bookings/owner-dashboard">
+                <i class="fa-solid fa-chart-line"></i> Host Dashboard
+              </a>
+            </li>
+
+          <% } %>
+
+        <% } %>
+
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+
+        <li class="nav-item">
+          <button id="themeToggle" class="btn btn-sm btn-outline-danger theme-toggle-btn" type="button">
+            <i id="themeIcon" class="fa-solid fa-moon"></i>
+          </button>
+        </li>
+
+        <% if(!currUser) { %>
+
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/signup">Sign Up</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/login">Login</a>
+          </li>
+
+        <% } else { %>
+
+          <li class="nav-item">
+            <a href="/profile" class="nav-link d-flex align-items-center gap-2">
+              <img
+                src="<%= currUser.profileImage && currUser.profileImage.url ? currUser.profileImage.url : 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg' %>"
+                class="nav-avatar"
+              >
+
+              <span class="fw-bold text-success">
+                <%= currUser.username %>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav-item position-relative">
+            <a class="nav-link fw-semibold" href="/notifications">
+              <i class="fa-solid fa-bell"></i>
+
+              <% if(unreadNotifications && unreadNotifications > 0) { %>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.65rem;"
+                >
+                  <%= unreadNotifications %>
+                </span>
+              <% } %>
+            </a>
+          </li>
+
+          <% if(currUser.role === "admin") { %>
+            <li class="nav-item">
+              <a class="nav-link fw-semibold text-danger" href="/admin">
+                <i class="fa-solid fa-shield-halved"></i>
+                Admin
+              </a>
+            </li>
+          <% } %>
+
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/profile">
+              <i class="fa-solid fa-user"></i> Profile
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link text-danger fw-semibold" href="/logout">
+              Logout
+            </a>
+          </li>
+
+        <% } %>
+
+      </ul>
+
+    </div>
+
+  </div>
+</nav>

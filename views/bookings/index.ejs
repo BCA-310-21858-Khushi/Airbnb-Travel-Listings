@@ -1,0 +1,175 @@
+<% layout("layouts/boilerplate") %>
+
+<%
+  const upcomingBookings = bookings.filter((booking) => booking.status === "Confirmed");
+  const completedBookings = bookings.filter((booking) => booking.status === "Completed");
+  const cancelledBookings = bookings.filter((booking) => booking.status === "Cancelled");
+
+  const renderBookingCard = (booking) => {
+%>
+
+  <%
+    let bookingImage = "";
+
+    if (
+      booking.listing &&
+      booking.listing.images &&
+      booking.listing.images.length > 0
+    ) {
+      bookingImage = booking.listing.images[0].url;
+    } else if (
+      booking.listing &&
+      booking.listing.image &&
+      booking.listing.image.url
+    ) {
+      bookingImage = booking.listing.image.url;
+    }
+  %>
+
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm border-0 rounded-4">
+
+      <img
+        src="<%= bookingImage %>"
+        class="card-img-top"
+        style="height:250px; object-fit:cover;"
+        alt="booking_image"
+      >
+
+      <div class="card-body">
+        <h5 class="fw-bold">
+          <%= booking.listing.title %>
+        </h5>
+
+        <p>
+          <i class="fa-solid fa-location-dot text-danger"></i>
+          <%= booking.listing.location %>
+        </p>
+
+        <hr>
+
+        <p><strong>Check In:</strong> <%= booking.checkIn.toDateString() %></p>
+        <p><strong>Check Out:</strong> <%= booking.checkOut.toDateString() %></p>
+        <p><strong>Guests:</strong> <%= booking.guests %></p>
+
+        <p>
+          <strong>Total Price:</strong>
+          ₹ <%= booking.totalPrice.toLocaleString("en-IN") %>
+        </p>
+
+        <p>
+          <strong>Payment Method:</strong>
+          <%= booking.paymentMethod || "Cash on Arrival" %>
+        </p>
+
+        <p>
+          <strong>Payment Status:</strong>
+          <% if(booking.paymentStatus === "Paid") { %>
+            <span class="badge bg-success">Paid</span>
+          <% } else { %>
+            <span class="badge bg-warning text-dark">Pending</span>
+          <% } %>
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+
+          <% if(booking.status === "Confirmed") { %>
+            <span class="badge bg-success">
+              <i class="fa-solid fa-circle-check"></i>
+              Confirmed
+            </span>
+          <% } else if(booking.status === "Cancelled") { %>
+            <span class="badge bg-danger">
+              <i class="fa-solid fa-ban"></i>
+              Cancelled
+            </span>
+          <% } else if(booking.status === "Completed") { %>
+            <span class="badge bg-primary">
+              <i class="fa-solid fa-medal"></i>
+              Stay Completed
+            </span>
+          <% } %>
+        </p>
+
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+
+          <a
+            href="/bookings/<%= booking._id %>/invoice"
+            class="btn btn-outline-primary btn-sm"
+          >
+            <i class="fa-solid fa-file-invoice"></i>
+            View Invoice
+          </a>
+
+          <% if(booking.status !== "Cancelled" && booking.status !== "Completed") { %>
+            <form
+              action="/bookings/<%= booking._id %>?_method=DELETE"
+              method="POST"
+              onsubmit="return confirm('Are you sure you want to cancel this booking?')"
+            >
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="fa-solid fa-xmark"></i>
+                Cancel Booking
+              </button>
+            </form>
+          <% } %>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<%
+  };
+%>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">My Bookings</h2>
+
+  <% if(bookings.length === 0) { %>
+    <div class="alert alert-info rounded-4">
+      You have no bookings yet.
+    </div>
+  <% } %>
+
+  <% if(upcomingBookings.length > 0) { %>
+    <h4 class="fw-bold mb-3">
+      <i class="fa-solid fa-calendar-check text-success"></i>
+      Upcoming Stays
+    </h4>
+
+    <div class="row mb-4">
+      <% upcomingBookings.forEach((booking) => { %>
+        <% renderBookingCard(booking); %>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <% if(completedBookings.length > 0) { %>
+    <h4 class="fw-bold mb-3">
+      <i class="fa-solid fa-medal text-primary"></i>
+      Completed Stays
+    </h4>
+
+    <div class="row mb-4">
+      <% completedBookings.forEach((booking) => { %>
+        <% renderBookingCard(booking); %>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <% if(cancelledBookings.length > 0) { %>
+    <h4 class="fw-bold mb-3">
+      <i class="fa-solid fa-ban text-danger"></i>
+      Cancelled Bookings
+    </h4>
+
+    <div class="row mb-4">
+      <% cancelledBookings.forEach((booking) => { %>
+        <% renderBookingCard(booking); %>
+      <% }) %>
+    </div>
+  <% } %>
+</div>

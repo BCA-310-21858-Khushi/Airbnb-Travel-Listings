@@ -1,0 +1,63 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">
+    <i class="fa-solid fa-heart text-danger"></i>
+    My Wishlist
+  </h2>
+
+  <% if(wishlist.length === 0) { %>
+    <div class="alert alert-info rounded-4">
+      Your wishlist is empty.
+    </div>
+  <% } %>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+    <% wishlist.forEach((listing) => { %>
+      <div class="col">
+        <div class="card listing-card h-100 shadow-sm border-0 rounded-4">
+
+          <a href="/listings/<%= listing._id %>" class="listing-link">
+            <img
+              src="<%= listing.image && listing.image.url ? listing.image.url : listing.image %>"
+              class="card-img-top"
+              alt="listing_image"
+              style="height:250px; object-fit:cover;"
+            >
+
+            <div class="card-body">
+              <h5 class="card-title fw-bold mb-1">
+                <%= listing.title %>
+              </h5>
+
+              <p class="text-muted mb-2">
+                <i class="fa-solid fa-location-dot text-danger"></i>
+                <%= listing.location %>, <%= listing.country %>
+              </p>
+
+              <p class="mb-0">
+                <span class="fw-bold">
+                  ₹ <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>
+                </span>
+                <span class="text-muted"> / night</span>
+              </p>
+            </div>
+          </a>
+
+          <div class="card-body pt-0">
+            <form
+              action="/wishlist/<%= listing._id %>?_method=DELETE"
+              method="POST"
+            >
+              <button class="btn btn-outline-danger w-100">
+                <i class="fa-solid fa-heart-crack"></i>
+                Remove from Wishlist
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

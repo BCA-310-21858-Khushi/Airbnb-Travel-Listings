@@ -1,0 +1,291 @@
+<% layout("layouts/boilerplate") %>
+
+<%
+  let totalBookings = bookings.length;
+  let totalRevenue = 0;
+  let paidBookings = 0;
+  let pendingPayments = 0;
+  let completedBookings = 0;
+  let cancelledBookings = 0;
+  let confirmedBookings = 0;
+
+  let uniqueListings = [];
+  let listingStats = {};
+
+  bookings.forEach((booking) => {
+    totalRevenue += booking.totalPrice || 0;
+
+    if (booking.paymentStatus === "Paid") {
+      paidBookings++;
+    } else {
+      pendingPayments++;
+    }
+
+    if (booking.status === "Completed") {
+      completedBookings++;
+    } else if (booking.status === "Cancelled") {
+      cancelledBookings++;
+    } else if (booking.status === "Confirmed") {
+      confirmedBookings++;
+    }
+
+    if (booking.listing) {
+      const listingId = booking.listing._id.toString();
+
+      if (!uniqueListings.includes(listingId)) {
+        uniqueListings.push(listingId);
+      }
+
+      if (!listingStats[listingId]) {
+        listingStats[listingId] = {
+          title: booking.listing.title,
+          bookings: 0,
+          revenue: 0,
+        };
+      }
+
+      listingStats[listingId].bookings++;
+      listingStats[listingId].revenue += booking.totalPrice || 0;
+    }
+  });
+
+  let averageBookingValue =
+    totalBookings > 0 ? Math.round(totalRevenue / totalBookings) : 0;
+
+  let topListing = null;
+
+  Object.values(listingStats).forEach((item) => {
+    if (!topListing || item.revenue > topListing.revenue) {
+      topListing = item;
+    }
+  });
+%>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">
+    <i class="fa-solid fa-chart-line text-danger"></i>
+    Host Earnings Dashboard
+  </h2>
+
+  <div class="row mb-4">
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <i class="fa-solid fa-house text-danger fs-3 mb-2"></i>
+          <h4 class="fw-bold"><%= uniqueListings.length %></h4>
+          <p class="text-muted mb-0">Booked Listings</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <i class="fa-solid fa-calendar-check text-success fs-3 mb-2"></i>
+          <h4 class="fw-bold"><%= totalBookings %></h4>
+          <p class="text-muted mb-0">Total Bookings</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <i class="fa-solid fa-indian-rupee-sign text-warning fs-3 mb-2"></i>
+          <h4 class="fw-bold">
+            ₹ <%= totalRevenue.toLocaleString("en-IN") %>
+          </h4>
+          <p class="text-muted mb-0">Total Earnings</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <i class="fa-solid fa-money-bill-trend-up text-primary fs-3 mb-2"></i>
+          <h4 class="fw-bold">
+            ₹ <%= averageBookingValue.toLocaleString("en-IN") %>
+          </h4>
+          <p class="text-muted mb-0">Avg Booking Value</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row mb-4">
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <h4 class="fw-bold text-success"><%= completedBookings %></h4>
+          <p class="text-muted mb-0">Completed</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <h4 class="fw-bold text-primary"><%= confirmedBookings %></h4>
+          <p class="text-muted mb-0">Upcoming</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <h4 class="fw-bold text-danger"><%= cancelledBookings %></h4>
+          <p class="text-muted mb-0">Cancelled</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm rounded-4 text-center h-100">
+        <div class="card-body">
+          <h4 class="fw-bold text-warning"><%= pendingPayments %></h4>
+          <p class="text-muted mb-0">Pending Payments</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <% if(topListing) { %>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-2">
+          <i class="fa-solid fa-trophy text-warning"></i>
+          Top Performing Listing
+        </h5>
+
+        <p class="mb-1">
+          <strong><%= topListing.title %></strong>
+        </p>
+
+        <p class="text-muted mb-0">
+          <%= topListing.bookings %> bookings ·
+          ₹ <%= topListing.revenue.toLocaleString("en-IN") %> revenue
+        </p>
+      </div>
+    </div>
+  <% } %>
+
+  <% if(bookings.length === 0) { %>
+    <div class="alert alert-info rounded-4">
+      You have not hosted any booked stays yet. Add a listing to become a host.
+    </div>
+  <% } %>
+
+  <h4 class="fw-bold mb-3">Recent Bookings</h4>
+
+  <div class="row">
+    <% bookings.forEach((booking) => { %>
+
+      <%
+        let bookingImage = "";
+
+        if (
+          booking.listing &&
+          booking.listing.images &&
+          booking.listing.images.length > 0
+        ) {
+          bookingImage = booking.listing.images[0].url;
+        } else if (
+          booking.listing &&
+          booking.listing.image &&
+          booking.listing.image.url
+        ) {
+          bookingImage = booking.listing.image.url;
+        }
+      %>
+
+      <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 rounded-4 h-100">
+
+          <img
+            src="<%= bookingImage %>"
+            class="card-img-top"
+            style="height:250px; object-fit:cover;"
+            alt="booking_image"
+          >
+
+          <div class="card-body">
+            <h5 class="fw-bold">
+              <%= booking.listing.title %>
+            </h5>
+
+            <p class="text-muted mb-2">
+              <i class="fa-solid fa-location-dot text-danger"></i>
+              <%= booking.listing.location %>
+            </p>
+
+            <hr>
+
+            <p>
+              <strong>Booked By:</strong>
+              <%= booking.user.username %>
+            </p>
+
+            <p>
+              <strong>Check In:</strong>
+              <%= booking.checkIn.toDateString() %>
+            </p>
+
+            <p>
+              <strong>Check Out:</strong>
+              <%= booking.checkOut.toDateString() %>
+            </p>
+
+            <p>
+              <strong>Guests:</strong>
+              <%= booking.guests %>
+            </p>
+
+            <p>
+              <strong>Total Price:</strong>
+              ₹ <%= booking.totalPrice.toLocaleString("en-IN") %>
+            </p>
+
+            <p>
+              <strong>Payment Method:</strong>
+              <%= booking.paymentMethod || "Cash on Arrival" %>
+            </p>
+
+            <p>
+              <strong>Payment Status:</strong>
+              <% if(booking.paymentStatus === "Paid") { %>
+                <span class="badge bg-success">Paid</span>
+              <% } else { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% } %>
+            </p>
+
+            <p>
+              <strong>Status:</strong>
+
+              <% if(booking.status === "Confirmed") { %>
+                <span class="badge bg-success">
+                  Confirmed
+                </span>
+              <% } else if(booking.status === "Cancelled") { %>
+                <span class="badge bg-danger">
+                  Cancelled
+                </span>
+              <% } else if(booking.status === "Completed") { %>
+                <span class="badge bg-primary">
+                  Completed
+                </span>
+              <% } %>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>

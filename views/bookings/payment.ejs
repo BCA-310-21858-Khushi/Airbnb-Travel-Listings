@@ -1,0 +1,96 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card border-0 shadow rounded-4">
+        <div class="card-body p-4 text-center">
+
+          <h3 class="fw-bold mb-3">Complete Your Payment</h3>
+
+          <p class="text-muted mb-2">
+            Booking for:
+          </p>
+
+          <h5 class="fw-bold">
+            <%= listing.title %>
+          </h5>
+
+          <p class="text-muted">
+            <i class="fa-solid fa-location-dot text-danger"></i>
+            <%= listing.location %>, <%= listing.country %>
+          </p>
+
+          <hr>
+
+          <h4 class="fw-bold text-danger mb-4">
+            ₹ <%= totalPrice.toLocaleString("en-IN") %>
+          </h4>
+
+          <button id="payBtn" class="btn btn-danger w-100">
+            Pay Now
+          </button>
+
+          <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary w-100 mt-3">
+            Cancel Payment
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  const options = {
+    key: "<%= keyId %>",
+    amount: "<%= order.amount %>",
+    currency: "INR",
+    name: "WanderLust",
+    description: "Booking Payment",
+    order_id: "<%= order.id %>",
+
+    handler: function (response) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/bookings/verify-payment";
+
+      const fields = {
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature
+      };
+
+      for (const key in fields) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = fields[key];
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+    },
+
+    prefill: {
+      name: "<%= currUser.username %>",
+      email: "<%= currUser.email || '' %>"
+    },
+
+    theme: {
+      color: "#dc3545"
+    }
+  };
+
+  const rzp = new Razorpay(options);
+
+  document.getElementById("payBtn").onclick = function (e) {
+    rzp.open();
+    e.preventDefault();
+  };
+</script>

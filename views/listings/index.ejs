@@ -1,0 +1,171 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="mt-4">
+
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Explore Amazing Stays</h2>
+    <p class="text-muted">Find your perfect place to stay</p>
+  </div>
+
+  <div class="search-box shadow-sm p-3 mb-4 bg-white rounded-4">
+    <form class="row g-3 align-items-center" action="/listings" method="GET">
+      <div class="col-md-3">
+        <input class="form-control" type="search" name="q" placeholder="Search location or title" />
+      </div>
+
+      <div class="col-md-2">
+        <input class="form-control" type="number" name="minPrice" placeholder="Min Price" />
+      </div>
+
+      <div class="col-md-2">
+        <input class="form-control" type="number" name="maxPrice" placeholder="Max Price" />
+      </div>
+
+      <div class="col-md-2">
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          <option value="Rooms">Rooms</option>
+          <option value="Apartment">Apartment</option>
+          <option value="Beach">Beach</option>
+          <option value="Mountains">Mountains</option>
+          <option value="Iconic-Cities">Iconic Cities</option>
+          <option value="Cabins">Cabins</option>
+          <option value="Camping">Camping</option>
+        </select>
+      </div>
+
+      <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-danger w-100" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i> Search
+        </button>
+
+        <a href="/listings" class="btn btn-outline-secondary w-100">
+          Reset
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <div class="form-check form-switch mb-4">
+    <input class="form-check-input" type="checkbox" role="switch" id="taxSwitch">
+    <label class="form-check-label" for="taxSwitch">
+      Display total after taxes
+    </label>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- <h5 class="fw-semibold mb-0">
+      <%= allListings.length %> stays available
+    </h5> -->
+
+    <div>
+      <a href="/listings?sort=low" class="btn btn-sm btn-outline-success">
+        Price: Low to High
+      </a>
+
+      <a href="/listings?sort=high" class="btn btn-sm btn-outline-danger ms-2">
+        Price: High to Low
+      </a>
+    </div>
+  </div>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+    <% for(let listing of allListings){ %>
+
+      <%
+        let avgRating = 0;
+        let reviewCount = listing.reviews ? listing.reviews.length : 0;
+
+        if(reviewCount > 0) {
+          let totalRating = 0;
+
+          for(let review of listing.reviews) {
+            totalRating += review.rating;
+          }
+
+          avgRating = (totalRating / reviewCount).toFixed(1);
+        }
+
+        let mainImage = "/images/default-listing.jpg";
+
+        if (listing.images && listing.images.length > 0) {
+          mainImage = listing.images[0].url;
+        } else if (listing.image && listing.image.url) {
+          mainImage = listing.image.url;
+        }
+      %>
+
+      <div class="col">
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+
+          <div class="card listing-card h-100 shadow-sm">
+            <div class="position-relative">
+              <img
+                src="<%= mainImage %>"
+                class="card-img-top"
+                alt="listing_image"
+              />
+
+              <span class="badge bg-light text-dark position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill">
+                <%= listing.category || "Stay" %>
+              </span>
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title fw-bold mb-1">
+                <%= listing.title %>
+              </h5>
+
+              <p class="text-muted mb-2">
+                <i class="fa-solid fa-location-dot text-danger" style="font-size: 1rem;"></i>
+                <%= listing.location %>, <%= listing.country %>
+              </p>
+
+              <p class="mb-2">
+                <% if(reviewCount > 0) { %>
+                  <span class="fw-semibold">
+                    <i class="fa-solid fa-star text-warning"></i>
+                    <%= avgRating %>
+                  </span>
+                  <span class="text-muted">
+                    (<%= reviewCount %> reviews)
+                  </span>
+                <% } else { %>
+                  <span class="text-muted">
+                    <i class="fa-regular fa-star text-warning"></i>
+                    No reviews yet
+                  </span>
+                <% } %>
+              </p>
+
+              <p class="mb-0">
+                <span class="fw-bold base-price">
+                  ₹ <%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>
+                </span>
+
+                <span class="fw-bold tax-price d-none">
+                  ₹ <%= listing.price ? Math.round(listing.price * 1.18).toLocaleString("en-IN") : "N/A" %>
+                </span>
+
+                <span class="text-muted"> / night</span>
+              </p>
+            </div>
+          </div>
+
+        </a>
+      </div>
+
+    <% } %>
+  </div>
+</div>
+
+<script>
+  const taxSwitch = document.getElementById("taxSwitch");
+  const basePrices = document.querySelectorAll(".base-price");
+  const taxPrices = document.querySelectorAll(".tax-price");
+
+  taxSwitch.addEventListener("change", () => {
+    basePrices.forEach(price => price.classList.toggle("d-none"));
+    taxPrices.forEach(price => price.classList.toggle("d-none"));
+  });
+</script>

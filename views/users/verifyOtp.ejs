@@ -1,0 +1,32 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="row mt-3">
+  <div class="col-6 offset-3">
+    <h2>Email OTP Verification</h2>
+
+    <p class="text-muted">
+      Enter the 6-digit OTP sent to your email.
+    </p>
+
+    <form action="/verify-otp" method="POST" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label class="form-label">OTP</label>
+        <input
+          name="otp"
+          type="text"
+          class="form-control"
+          maxlength="6"
+          minlength="6"
+          required
+        >
+        <div class="invalid-feedback">
+          Please enter valid 6-digit OTP.
+        </div>
+      </div>
+
+      <button class="btn btn-success">
+        Verify OTP
+      </button>
+    </form>
+  </div>
+</div>

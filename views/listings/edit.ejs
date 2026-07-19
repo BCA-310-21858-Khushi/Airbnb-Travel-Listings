@@ -1,0 +1,285 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row">
+  <div class="col-8 offset-2">
+
+    <form
+      action="/listings/<%= listing._id %>?_method=PUT"
+      method="POST"
+      novalidate
+      class="needs-validation"
+      enctype="multipart/form-data"
+    >
+      <h3>Edit this Listing</h3>
+
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          name="listing[title]"
+          class="form-control"
+          id="title"
+          placeholder="Enter title"
+          required
+          value="<%= listing.title %>"
+        >
+        <div class="valid-feedback">Title looks good!</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          name="listing[description]"
+          class="form-control"
+          id="description"
+          cols="30"
+          rows="10"
+          placeholder="Enter description"
+          required
+        ><%= listing.description %></textarea>
+        <div class="invalid-feedback">Please enter a short description</div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Original Listing Image</label><br>
+        <img
+          src="<%= listing.image.url %>"
+          class="img-fluid"
+          style="width:100%; height:200px; object-fit:cover; border-radius:1rem;"
+          alt="listing image"
+        >
+      </div>
+
+      <div class="mb-3">
+  <label for="images" class="form-label">
+    Upload New Images
+  </label>
+
+  <input
+    name="images"
+    type="file"
+    class="form-control"
+    id="images"
+    accept="image/png, image/jpg, image/jpeg"
+    multiple
+  >
+
+  <div class="form-text">
+    You can upload more images for this listing.
+  </div>
+
+        <div class="mt-3">
+          <img
+            id="previewImage"
+            src=""
+            style="display:none; width:100%; height:220px; object-fit:cover; border-radius:1rem; border:1px solid #ddd;"
+            alt="Image Preview"
+          >
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Choose Category</label>
+
+        <div class="row">
+          <div class="col-md-6">
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="rooms" name="listing[category]" value="Rooms" required <%= listing.category === "Rooms" ? "checked" : "" %>>
+              <label class="form-check-label" for="rooms">
+                <i class="fa-solid fa-bed me-2"></i> Rooms
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="iconic-cities" name="listing[category]" value="Iconic-Cities" required <%= listing.category === "Iconic-Cities" ? "checked" : "" %>>
+              <label class="form-check-label" for="iconic-cities">
+                <i class="fa-solid fa-mountain-city me-2"></i> Iconic Cities
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="mountains" name="listing[category]" value="Mountains" required <%= listing.category === "Mountains" ? "checked" : "" %>>
+              <label class="form-check-label" for="mountains">
+                <i class="fa-solid fa-mountain-sun me-2"></i> Mountains
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="apartment" name="listing[category]" value="Apartment" required <%= listing.category === "Apartment" ? "checked" : "" %>>
+              <label class="form-check-label" for="apartment">
+                <i class="fa-solid fa-building me-2"></i> Apartment
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="lake" name="listing[category]" value="Lake" required <%= listing.category === "Lake" ? "checked" : "" %>>
+              <label class="form-check-label" for="lake">
+                <i class="fa-solid fa-water me-2"></i> Lake
+              </label>
+            </div>
+
+          </div>
+
+          <div class="col-md-6">
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="cabins" name="listing[category]" value="Cabins" required <%= listing.category === "Cabins" ? "checked" : "" %>>
+              <label class="form-check-label" for="cabins">
+                <i class="fa-solid fa-house me-2"></i> Cabins
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="camping" name="listing[category]" value="Camping" required <%= listing.category === "Camping" ? "checked" : "" %>>
+              <label class="form-check-label" for="camping">
+                <i class="fa-solid fa-campground me-2"></i> Camping
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="beach" name="listing[category]" value="Beach" required <%= listing.category === "Beach" ? "checked" : "" %>>
+              <label class="form-check-label" for="beach">
+                <i class="fa-solid fa-umbrella-beach me-2"></i> Beach
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="farm" name="listing[category]" value="Farm" required <%= listing.category === "Farm" ? "checked" : "" %>>
+              <label class="form-check-label" for="farm">
+                <i class="fa-solid fa-cow me-2"></i> Farm
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" id="amazing-pools" name="listing[category]" value="Amazing-Pools" required <%= listing.category === "Amazing-Pools" ? "checked" : "" %>>
+              <label class="form-check-label" for="amazing-pools">
+                <i class="fa-solid fa-person-swimming me-2"></i> Amazing Pools
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Amenities</label>
+
+        <div class="row">
+          <div class="col-md-6">
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="WiFi" id="wifi" <%= listing.amenities && listing.amenities.includes("WiFi") ? "checked" : "" %>>
+              <label class="form-check-label" for="wifi">
+                <i class="fa-solid fa-wifi me-2 text-danger"></i> WiFi
+              </label>
+            </div>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="AC" id="ac" <%= listing.amenities && listing.amenities.includes("AC") ? "checked" : "" %>>
+              <label class="form-check-label" for="ac">
+                <i class="fa-solid fa-snowflake me-2 text-danger"></i> AC
+              </label>
+            </div>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Kitchen" id="kitchen" <%= listing.amenities && listing.amenities.includes("Kitchen") ? "checked" : "" %>>
+              <label class="form-check-label" for="kitchen">
+                <i class="fa-solid fa-kitchen-set me-2 text-danger"></i> Kitchen
+              </label>
+            </div>
+
+          </div>
+
+          <div class="col-md-6">
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Parking" id="parking" <%= listing.amenities && listing.amenities.includes("Parking") ? "checked" : "" %>>
+              <label class="form-check-label" for="parking">
+                <i class="fa-solid fa-square-parking me-2 text-danger"></i> Parking
+              </label>
+            </div>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Pool" id="pool" <%= listing.amenities && listing.amenities.includes("Pool") ? "checked" : "" %>>
+              <label class="form-check-label" for="pool">
+                <i class="fa-solid fa-person-swimming me-2 text-danger"></i> Pool
+              </label>
+            </div>
+
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="listing[amenities][]" value="Pet Friendly" id="pet" <%= listing.amenities && listing.amenities.includes("Pet Friendly") ? "checked" : "" %>>
+              <label class="form-check-label" for="pet">
+                <i class="fa-solid fa-paw me-2 text-danger"></i> Pet Friendly
+              </label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            placeholder="Enter price"
+            class="form-control"
+            name="listing[price]"
+            id="price"
+            required
+            min="1"
+            value="<%= listing.price %>"
+          >
+          <div class="invalid-feedback">Price should be valid</div>
+        </div>
+
+        <div class="mb-3 col-md-8">
+          <label for="location" class="form-label">Location</label>
+          <input
+            type="text"
+            name="listing[location]"
+            class="form-control"
+            id="location"
+            placeholder="Enter location"
+            required
+            value="<%= listing.location %>"
+          >
+          <div class="invalid-feedback">Location should be valid</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="country" class="form-label">Country</label>
+        <input
+          type="text"
+          name="listing[country]"
+          class="form-control"
+          id="country"
+          placeholder="Enter country"
+          required
+          value="<%= listing.country %>"
+        >
+        <div class="invalid-feedback">Country Name should be valid</div>
+      </div>
+
+      <button class="btn btn-dark edit-btn mt-3">Confirm changes</button>
+      <br><br>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const imageInput = document.getElementById("images");
+  const previewImage = document.getElementById("previewImage");
+
+  imageInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (file) {
+      previewImage.src = URL.createObjectURL(file);
+      previewImage.style.display = "block";
+    }
+  });
+</script>
